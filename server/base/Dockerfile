@@ -1,5 +1,4 @@
-FROM test:base
-#FROM matya/docker-rudder-testsuite:base
+FROM matya/rudder-testsuite:base
 MAINTAINER Janos Mattyasovszky <mail@matya.hu>
 
 RUN \
