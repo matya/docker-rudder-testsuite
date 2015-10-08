@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+if ! grep -q '^unset' /opt/rudder/etc/uuid.hive; then
+    echo "** UUID already existing, assuming restart of container"
+    exit 0
+fi
+
+[[ -s /etc/container_environment.sh ]] && source /etc/container_environment.sh
+
+: Setting policy server to ${POLICY_SERVER:=rudder-relay}
+
+echo "* Setting policy server: ${POLICY_SERVER}"
+echo "${POLICY_SERVER}" > /var/rudder/cfengine-community/policy_server.dat
+
+UUID=$( uuidgen )
+echo "* Generating new UUID: $UUID"
+echo "$UUID" > /opt/rudder/etc/uuid.hive
+
+echo "* Forcing inventory creation and upload"
+/var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory -b doInventory,sendInventoryToCmdb | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
+
+echo "* Done. Policy update will kick in with default schedule"
+
+

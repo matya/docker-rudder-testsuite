@@ -1,0 +1,30 @@
+#!/bin/bash
+
+SLAPD_CONFIG=/opt/rudder/etc/openldap/slapd.conf
+
+[[ -s /etc/container_environment.sh ]] && source /etc/container_environment.sh
+
+: Setting default to 30 of not specified by environment: ${AUTOACCEPT_SCHEDULE:=30}
+
+[[ -x /usr/bin/ldapsearch ]] || { echo "No ldapsearch binary found"; exit 1; }
+[[ -x /usr/bin/curl ]] || { echo "No curl binary found"; exit 1; }
+
+# Daemonize and redirect to logfile
+cd /;
+exec < /dev/null;
+exec >&2;
+echo "[accept_pending: service] ** Started daemon, scheduled every ${AUTOACCEPT_SCHEDULE} sec(s)"
+while : ; do
+    ROOT_DN=$( awk -F'"' '/^rootdn/ {print $2; exit;}' $SLAPD_CONFIG )
+    ROOT_PW=$( awk       '/^rootpw/ {print $2; exit;}' $SLAPD_CONFIG )
+    PENDING_NODES=$(
+        /usr/bin/ldapsearch -D "$ROOT_DN" -w "$ROOT_PW" -H 'ldap://127.0.0.1:389' \
+            -b 'ou=Nodes,ou=Pending Inventories,ou=Inventories,cn=rudder-configuration' '(objectClass=node)' nodeId | awk '/^nodeId:/ { print $2; }' 2> /dev/null
+    )
+    for NODEID in $PENDING_NODES; do
+        echo "[accept_pending: service] ** Auto-Accepting: $NODEID" 
+        ( exec > >( sed "s|^|[accept_pending: $BASHPID]** |g" ) 2>&1; bash /rudder/bin/accept_pending.sh $NODEID; ) & 
+    done;
+    sleep $AUTOACCEPT_SCHEDULE
+done
+

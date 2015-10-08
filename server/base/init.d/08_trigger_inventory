@@ -1,0 +1,7 @@
+#!/bin/bash
+echo "* Forcing inventory upload to make new hostname known to Rudder"
+echo "* (see https://www.rudder-project.org/redmine/issues/7252) "
+/var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory -b doInventory,sendInventoryToCmdb | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
+echo "* Done."
+
+
