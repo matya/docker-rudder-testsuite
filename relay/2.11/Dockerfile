@@ -1,4 +1,4 @@
-FROM test:relay.base
-MAINTAINER JanosM
+FROM matya/rudder-testsuite:relay.base
+MAINTAINER Janos Mattyasovszky <mail@matya.hu>
 
 

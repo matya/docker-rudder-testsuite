@@ -29,6 +29,5 @@ ONBUILD RUN \
 			mkdir -p /etc/service/$srvname && \
 			cp -v $srvfile /etc/service/$srvname/run; \
 		done; \
-	fi && \
-	chmod +x /etc/service/* /etc/my_init.d/*
+	fi 
 

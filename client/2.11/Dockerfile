@@ -1,4 +1,4 @@
-FROM test:client.base
-MAINTAINER JanosM
+FROM matya/rudder-testsuite:client.base
+MAINTAINER Janos Mattyasovszky <mail@matya.hu>
 
 
