@@ -1,0 +1,32 @@
+#!/bin/bash
+
+[[ -s /rudder/api-token ]] && exit 0
+
+UUID=$( /usr/bin/uuidgen )
+
+SLAPD_CONFIG=/opt/rudder/etc/openldap/slapd.conf
+ROOT_DN=$( awk -F'"' '/^rootdn/ {print $2; exit;}' $SLAPD_CONFIG )
+ROOT_PW=$( awk '/^rootpw/ { print $2; exit; }' $SLAPD_CONFIG )
+
+TOKEN=$( /usr/bin/uuidgen | md5sum | cut -f1 -d' ')
+
+umask 077
+echo -n "$TOKEN" > /rudder/api-token
+
+echo "Creating new API KEY"
+
+/usr/bin/ldapadd -D "$ROOT_DN" -w "$ROOT_PW" -H 'ldap://127.0.0.1:389' <<<"
+version: 1
+
+dn: apiAccountId=$UUID,ou=API Accounts,ou=Rudder,cn=rudder-configuration
+objectClass: top
+objectClass: apiAccount
+apiAccountId: $UUID
+apiToken: $TOKEN
+apiTokenCreationTimestamp: 20150128144030.948Z
+cn: DOCKER_LOCALHOST_KEY
+creationTimestamp: 20150128144030.948Z
+isEnabled: TRUE"
+
+echo "[$0] New API KEY is '$TOKEN' in /rudder/api-token"
+

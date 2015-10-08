@@ -1,0 +1,5 @@
+#!/bin/bash
+J=$( pidof java );
+LOG=$(ls -l /proc/$J/fd/ | grep /var/log/rudder/webapp | awk '{print $NF; exit}' ); 
+exec tail -F -n3 $LOG
+

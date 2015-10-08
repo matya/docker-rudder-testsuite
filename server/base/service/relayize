@@ -1,0 +1,32 @@
+#!/bin/bash
+
+PIPE=/var/run/relayize.socket
+
+USER=www-data
+GROUP=www-data
+
+[[ -x /usr/bin/ldapsearch ]] || { echo "No ldapsearch binary found"; exit 1; }
+[[ -x /usr/bin/curl ]] || { echo "No curl binary found"; exit 1; }
+
+cd /;
+exec < /dev/null >&2;
+
+[[ -e $PIPE ]] && rm -f $PIPE
+mkfifo -m 200 $PIPE
+chown ${USER}:${GROUP} $PIPE
+
+[[ -d /var/relayize/cgi-bin/ ]] || mkdir -p /var/relayize/ /var/relayize/cgi-bin/
+cp -f /rudder/bin/relayize.cgi /var/relayize/cgi-bin/relayize.cgi
+chmod --recursive 500 /var/relayize
+chown --recursive ${USER}:${GROUP} /var/relayize
+chmod +x /var/relayize/cgi-bin/relayize.cgi
+
+echo "[relayize: service]** Started daemon to listen to promotion requests of wannabe-relays ;-)"
+
+while : ; do
+    read UUID < $PIPE
+    echo "[relayize: service]** Processing request to promote to relay of $UUID"
+    ( exec > >( sed "s|^|[relayize: $BASHPID]** |g" ) 2>&1; bash /rudder/bin/relayize.sh "$UUID"; ) &
+done 
+
+
