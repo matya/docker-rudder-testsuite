@@ -19,7 +19,7 @@ echo "* Generating new UUID: $UUID"
 echo "$UUID" > /opt/rudder/etc/uuid.hive
 
 echo "* Forcing inventory creation and upload"
-/var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory -b doInventory,sendInventoryToCmdb | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
+/var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory -b doInventory | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
 
 echo "* Done. Policy update will kick in with default schedule"
 
