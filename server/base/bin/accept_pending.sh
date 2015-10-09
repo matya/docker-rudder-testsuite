@@ -22,7 +22,7 @@ while :; do
             grep -e '"result"'
         exit 0
     elif [[ x"$STATUS" = x"accepted" ]]; then
-        echo "- Node already accepted"
+        echo "- Node $NODEID already accepted"
         exit 0
     fi
     if (( C++ > 180 )); then
