@@ -1,0 +1,4 @@
+#!/bin/bash
+
+touch /rudder/system-started
+exit 0
