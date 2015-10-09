@@ -9,6 +9,6 @@ PIPE=/var/run/relayize.socket
 
 echo "$UUID" > $PIPE
 
-echo "Saved for processing"
+echo "Queued $UUID for promotion"
 exit 0
 
