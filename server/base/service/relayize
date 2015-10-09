@@ -20,6 +20,8 @@ cp -f /rudder/bin/relayize.cgi /var/relayize/cgi-bin/relayize.cgi
 chmod --recursive 500 /var/relayize
 chown --recursive ${USER}:${GROUP} /var/relayize
 chmod +x /var/relayize/cgi-bin/relayize.cgi
+touch /var/relayize/relays.txt
+chmod 644 /var/relayize/relays.txt
 
 echo "[relayize: service]** Started daemon to listen to promotion requests of wannabe-relays ;-)"
 

@@ -12,7 +12,8 @@ echo "Accepting node:"
 bash /rudder/bin/accept_pending.sh $UUID
 
 echo "Promote to relay:"
-/opt/rudder/bin/rudder-node-to-relay $UUID
+/opt/rudder/bin/rudder-node-to-relay $UUID || { echo "Failed to promote!"; exit 1; }
+grep -q "^$UUID" /var/relayize/relays.txt || { echo "$UUID" >> /var/relayize/relays.txt; }
 
 echo "Regenerate promises:"
 curl -s http://localhost:8080/rudder/api/deploy/reload; echo "";
