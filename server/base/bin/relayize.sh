@@ -9,7 +9,7 @@ echo "Forcing inventory processing:"
 /var/rudder/cfengine-community/bin/cf-agent -KI -b sendInventoryToCmdb | awk -F '@#' '/root-distributePolicy/  {print $NF}'
 
 echo "Accepting node:"
-bash /rudder/bin/accept_pending.sh $UUID
+bash /rudder/bin/accept_pending.sh $UUID || { echo "Failed to accept node!"; exit 1; }
 
 echo "Promote to relay:"
 /opt/rudder/bin/rudder-node-to-relay $UUID || { echo "Failed to promote!"; exit 1; }
