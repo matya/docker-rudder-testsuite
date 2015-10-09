@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /var/rudder/cfengine-community/bin/cf-execd
