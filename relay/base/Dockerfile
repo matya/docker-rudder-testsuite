@@ -34,3 +34,4 @@ ONBUILD RUN \
 	{ echo "unset" > /opt/rudder/etc/uuid.hive; }
 
 
+ONBUILD ENTRYPOINT [ "/sbin/my_init" ]

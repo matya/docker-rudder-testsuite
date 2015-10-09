@@ -30,3 +30,4 @@ ONBUILD RUN \
 	/etc/init.d/postgresql stop && \
 	chmod +x /etc/my_init.d/* /etc/service/*/run /rudder/bin/*
 
+ONBUILD ENTRYPOINT [ "/sbin/my_init" ]

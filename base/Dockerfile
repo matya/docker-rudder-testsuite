@@ -31,3 +31,4 @@ ONBUILD RUN \
 		done; \
 	fi 
 
+ENTRYPOINT echo "This image is not intended to be run directly, it only serves as a base for versioned instances"; exit 1;
