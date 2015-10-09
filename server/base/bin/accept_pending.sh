@@ -8,10 +8,9 @@ exec 2>&1
 API_KEY="$(</rudder/api-token)"
 
 [[ -x /usr/bin/curl ]] || { echo "No curl binary found"; exit 1; }
-CURL="/usr/bin/curl --silent -L -H 'X-API-Token: $API_KEY'"
 api() {
     local p="$1"; shift;
-    $CURL "${BASEURL}/$p" $@
+    /usr/bin/curl --silent -L -H "X-API-Token: $API_KEY" "${BASEURL}/$p" $@
 }
 
 C=0
