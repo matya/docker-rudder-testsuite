@@ -7,7 +7,7 @@ ENV \
 RUN \
 	apt-get update && \
 	apt-get -y --no-install-recommends install \
-		rsyslog dmidecode uuid-runtime && \
+		rsyslog dmidecode uuid-runtime htop && \
 	apt-get -y autoremove
 
 RUN \
