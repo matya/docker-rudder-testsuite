@@ -1,7 +1,7 @@
 #!/bin/bash
 
 : ${IMAGEBASE:=test}
-: ${VERSION:=2.11}
+: ${VERSION:=latest}
 
 set -e
 
@@ -14,7 +14,3 @@ for T in \
         echo "=================================================================";
 done
 echo ""
-
-echo "[[[[[ Start ]]]]]"
-
-: TODO: Start N relays, with M agents each
