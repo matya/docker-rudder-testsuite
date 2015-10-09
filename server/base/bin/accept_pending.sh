@@ -14,7 +14,6 @@ api() {
     $CURL "${BASEURL}/$p" $@
 }
 
-echo "- Waiting for node $NODEID to appear..."
 C=0
 while :; do
     STATUS=$( api "nodes/$NODEID?prettify=true" | awk -F'"' '/"status":/ { print $(NF-1); exit; }' )
@@ -31,6 +30,7 @@ while :; do
         echo "- Timeout of 15 minutes reached!"
         exit 1
     fi
+    echo "- Waiting for node $NODEID to appear..."
     sleep 5
 done
 
