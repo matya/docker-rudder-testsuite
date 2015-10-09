@@ -31,4 +31,7 @@ ONBUILD RUN \
 		done; \
 	fi 
 
-ENTRYPOINT echo "This image is not intended to be run directly, it only serves as a base for versioned instances"; exit 1;
+ENTRYPOINT \
+	echo "This image is not intended to be run directly, it only serves as a base for versioned instances"; \
+	echo "Please visit https://hub.docker.com/r/matya/rudder-testsuite for further information and usage"; \
+	exit 1;
