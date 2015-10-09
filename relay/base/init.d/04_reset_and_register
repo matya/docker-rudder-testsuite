@@ -25,7 +25,10 @@ echo "* Calling home to policy_server to accept us as relays..."
 curl -s -L http://${POLICY_SERVER}:15000/cgi-bin/relayize.cgi?${UUID}
 
 echo "* Waiting some time for promises being generated..."
-sleep 5
+for i in {1..72}; do
+    curl -s -L http://${POLICY_SERVER}:15000/relays.txt | grep -q $UUID && break
+    sleep 5
+done
 
 echo "* Pulling fresh config"
 /var/rudder/cfengine-community/bin/cf-agent -KI -f failsafe.cf | grep -v promo
