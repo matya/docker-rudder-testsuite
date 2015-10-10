@@ -28,6 +28,7 @@ ONBUILD RUN \
 	/etc/init.d/rudder-slapd stop && \
 	rm /var/rudder/ldap/backup/openldap-data-*.ldif && \
 	/etc/init.d/postgresql stop && \
-	chmod +x /etc/my_init.d/* /etc/service/*/run /rudder/bin/*
+	chmod +x /etc/my_init.d/* /etc/service/*/run /rudder/bin/* && \
+	touch /etc/rc2.d/S00rudder-slapd /etc/rc2.d/S00rudder-jetty
 
 ONBUILD ENTRYPOINT [ "/sbin/my_init" ]
