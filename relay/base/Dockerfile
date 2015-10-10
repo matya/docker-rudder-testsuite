@@ -7,7 +7,7 @@ ONBUILD ADD \
 
 RUN \
 	apt-get -y --no-install-recommends install \
-		apache2 apache2-utils rsyslog uuid-runtime dmidecode libltdl7 rsync && \
+		apache2 apache2-utils rsyslog uuid-runtime dmidecode libltdl7 rsync rsyslog-pgsql && \
 	a2enmod dav dav_fs && \
 	a2dissite *efault && \
 	/etc/init.d/apache2 stop && \
