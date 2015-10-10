@@ -23,7 +23,8 @@ while : ; do
     )
     for NODEID in $PENDING_NODES; do
         echo "[accept_pending: service] ** Auto-Accepting: $NODEID" 
-        ( exec > >( sed "s|^|[accept_pending: $BASHPID]** |g" ) 2>&1; bash /rudder/bin/accept_pending.sh $NODEID; ) & 
+        ( /rudder/bin/accept_pending.sh $NODEID 2>&1 | awk -v "P=$BASHPID" '{print "[accept_pending:" P "]** " $0; fflush(); }' ) &
+        echo "[accept_pending: service] ** Started worked $!"
     done;
     sleep $AUTOACCEPT_SCHEDULE
 done
