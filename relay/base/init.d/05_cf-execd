@@ -1,2 +1,3 @@
 #!/bin/bash
 [[ $(pgrep -c cf-execd) -eq 0 ]] && exec /var/rudder/cfengine-community/bin/cf-execd
+exit 0
