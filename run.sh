@@ -109,7 +109,7 @@ function ok() { printf "$format" "$GREEN"  "[OK]"   "$RESET" "${@:+ $@}"; }
 function waitfor() {
     local ID="$1"
     local SLEEP="${2:-5}"
-    local MAXWAIT="${3:-180}"
+    local MAXWAIT="${3:-600}"
     local CURRWAIT=0
     while : ; do
         (( CURRWAIT > MAXWAIT )) && return 1
@@ -146,7 +146,7 @@ for MASTERNUMBER in 1; do
 
     p "Waiting for services to start..."
     waitfor "$E" || e "Wait timeout breached"
-    ok "system up"
+    ok "system up as root"
 
     for RELAYNUMBER in ${!RELAYS[*]}; do
         RELAYNAME=$( printf "%s_r%02i" "$MASTERNAME" "$RELAYNUMBER" )
@@ -159,11 +159,12 @@ for MASTERNUMBER in 1; do
                 --link "$MASTERNAME:$MASTERNAME" \
                     ${RTS_IMAGE}:relay.${RTS_RELEASE} 
             2>&1 ) || e "Failed" "$E"
-        ok "'$RELAYNAME' started with ${E:0:12}'"
+        ok "'$RELAYNAME' started with ${E:0:12}"
 
         p "Waiting for services to start..."
         waitfor "$E" || e "Wait timeout breached"
-        ok "system up"
+        UUID=$( docker exec "$E" cat /opt/rudder/etc/uuid.hive )
+        ok "system up with UUID $UUID"
 
         if [[ ${RELAYS[$RELAYNUMBER]} -gt 0 ]]; then
             for CLIENTNUMBER in $( seq 1 ${RELAYS[$RELAYNUMBER]} ); do
