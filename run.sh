@@ -130,6 +130,9 @@ if [[ $(docker images 2>&1 | awk -v "REPO=${RTS_IMAGE}" '$1 == REPO { print $2 }
     exit 1
 fi    
 
+# We need some cap's because of start-stop-daemon
+## see @ https://github.com/docker/docker/issues/6800
+
 # Currently we only support a tree of one Root Server, but I'll keep the loop for the future
 for MASTERNUMBER in 1; do
     MASTERNAME=$( printf "%s_m%02i" "${RTS_PREFIX}" "$MASTERNUMBER" )
@@ -139,6 +142,7 @@ for MASTERNUMBER in 1; do
     E=$( 
         docker run -d \
             --name "$MASTERNAME" --hostname="$MASTERNAME" \
+            --cap-add=SYS_PTRACE \
             -p ${SSLPORT}:443 \
                 ${RTS_IMAGE}:server.${RTS_RELEASE}  
         2>&1 ) || e "Failed" "$E"
@@ -155,6 +159,7 @@ for MASTERNUMBER in 1; do
         E=$( 
             docker run -d \
                 --name "$RELAYNAME" --hostname="$RELAYNAME" \
+                --cap-add=SYS_PTRACE \
                 --env "POLICY_SERVER=$MASTERNAME" \
                 --link "$MASTERNAME:$MASTERNAME" \
                     ${RTS_IMAGE}:relay.${RTS_RELEASE} 
@@ -173,6 +178,7 @@ for MASTERNUMBER in 1; do
                 E=$( 
                     docker run -d \
                         --name "$CLIENTNAME" --hostname="$CLIENTNAME" \
+                        --cap-add=SYS_PTRACE \
                         --env "POLICY_SERVER=$RELAYNAME" \
                         --link "$RELAYNAME:$RELAYNAME" \
                             ${RTS_IMAGE}:client.${RTS_RELEASE} 
