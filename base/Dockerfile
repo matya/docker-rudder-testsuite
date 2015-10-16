@@ -7,7 +7,7 @@ ENV \
 RUN \
 	apt-get update && \
 	apt-get -y --no-install-recommends install \
-		rsyslog dmidecode uuid-runtime htop && \
+		rsyslog dmidecode uuid-runtime htop lsof strace tcpdump && \
 	apt-get -y autoremove
 
 RUN \
