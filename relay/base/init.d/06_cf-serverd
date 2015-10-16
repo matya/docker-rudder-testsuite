@@ -1,3 +1,0 @@
-#!/bin/bash
-[[ $(pgrep -c cf-serverd) -eq 0 ]] && exec /var/rudder/cfengine-community/bin/cf-serverd
-exit 0

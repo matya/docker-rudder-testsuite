@@ -1,0 +1,3 @@
+#!/bin/bash
+pkill cf-serverd
+exec /var/rudder/cfengine-community/bin/cf-serverd -F
