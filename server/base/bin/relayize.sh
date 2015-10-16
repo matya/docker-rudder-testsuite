@@ -13,10 +13,16 @@ bash /rudder/bin/accept_pending.sh $UUID || { echo "Failed to accept node!"; exi
 
 echo "Promote to relay:"
 /opt/rudder/bin/rudder-node-to-relay $UUID || { echo "Failed to promote!"; exit 1; }
-grep -q "^$UUID" /var/relayize/relays.txt || { echo "$UUID" >> /var/relayize/relays.txt; }
 
 echo "Regenerate promises:"
 curl -s http://localhost:8080/rudder/api/deploy/reload; echo "";
+
+while : ; do
+    echo "Waiting for promises being generated..."
+    [[ -f /var/rudder/share/$UUID/rules/cfengine-community/rudder_promises_generated ]] && break
+    sleep 15
+done
+grep -q "^$UUID" /var/relayize/relays.txt || { echo "$UUID" >> /var/relayize/relays.txt; }
 
 echo "Exit"
 exit 0
