@@ -1,0 +1,3 @@
+#!/bin/sh
+DIR=$( readlink -f $( dirname $( readlink -f $0 ) )/../../www )
+exec /usr/bin/mongoose -document_root $DIR -listening_ports 15001 -cgi_pattern '**.cgi$' 

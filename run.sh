@@ -134,6 +134,15 @@ fi
 ## see @ https://github.com/docker/docker/issues/6800
 
 # Currently we only support a tree of one Root Server, but I'll keep the loop for the future
+
+p "Starting DNS Server"
+E=$(
+    docker run -d \
+        --name "${RTS_PREFIX}_dns" --hostname "${RTS_PREFIX}_dns" \
+            ${RTS_IMAGE}:dns
+    2>&1 ) || e "Failed" "$E"            
+ok "system started"
+
 for MASTERNUMBER in 1; do
     MASTERNAME=$( printf "%s_m%02i" "${RTS_PREFIX}" "$MASTERNUMBER" )
     SSLPORT="$( tmp="RTS_SSL_PORT_${MASTERNUMBER}"; echo ${!tmp}; )"
@@ -143,6 +152,7 @@ for MASTERNUMBER in 1; do
         docker run -d \
             --name "$MASTERNAME" --hostname="$MASTERNAME" \
             --cap-add=SYS_PTRACE \
+            --link "${RTS_PREFIX}_dns:dns" \
             -p ${SSLPORT}:443 \
                 ${RTS_IMAGE}:server.${RTS_RELEASE}  
         2>&1 ) || e "Failed" "$E"
@@ -161,6 +171,7 @@ for MASTERNUMBER in 1; do
                 --name "$RELAYNAME" --hostname="$RELAYNAME" \
                 --cap-add=SYS_PTRACE \
                 --env "POLICY_SERVER=$MASTERNAME" \
+                --link "${RTS_PREFIX}_dns:dns" \
                 --link "$MASTERNAME:$MASTERNAME" \
                     ${RTS_IMAGE}:relay.${RTS_RELEASE} 
             2>&1 ) || e "Failed" "$E"
@@ -180,6 +191,7 @@ for MASTERNUMBER in 1; do
                         --name "$CLIENTNAME" --hostname="$CLIENTNAME" \
                         --cap-add=SYS_PTRACE \
                         --env "POLICY_SERVER=$RELAYNAME" \
+                        --link "${RTS_PREFIX}_dns:dns" \
                         --link "$RELAYNAME:$RELAYNAME" \
                             ${RTS_IMAGE}:client.${RTS_RELEASE} 
                     2>&1 ) || e "Failed" "$E"
@@ -189,6 +201,7 @@ for MASTERNUMBER in 1; do
     done
 done
 
+echo ""
 docker ps | grep " ${RTS_PREFIX}_"
 
 exit 0

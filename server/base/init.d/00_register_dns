@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [[ -z "$DNS_PORT_53_UDP_ADDR" ]]; then
+    echo "* No DNS server set! DNS_PORT_53_UDP_ADDR is empty!"
+    exit 0
+fi
+
+echo "* Registering node for name resolution:"
+OUT=$( curl -s -L http://$DNS_PORT_53_UDP_ADDR:15001/register.cgi?${HOSTNAME} 2>&1 )
+if grep -q '^Registered' <<<"$OUT"; then
+    sed 's/^nameserver /# &/g' /etc/resolv.conf > /var/tmp/resolv.conf.new
+    echo "nameserver $DNS_PORT_53_UDP_ADDR" >> /var/tmp/resolv.conf.new
+    cat /var/tmp/resolv.conf.new > /etc/resolv.conf
+    echo ">> $OUT"
+    echo "Success, set $DNS_PORT_53_UDP_ADDR as DNS Server"
+else
+    echo "Failed to register:"
+    echo ">> $OUT"
+    exit 1
+fi
+
