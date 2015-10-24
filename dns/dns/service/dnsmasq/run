@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /usr/sbin/dnsmasq --keep-in-foreground --user=root --local-service --no-resolv --cache-size=2000 --no-negcache --local-ttl=3600 --log-queries >&2
+exec /usr/sbin/dnsmasq --keep-in-foreground --user=root --local-service --cache-size=2000 --no-negcache --local-ttl=3600 >&2
