@@ -130,6 +130,13 @@ if [[ $(docker images 2>&1 | awk -v "REPO=${RTS_IMAGE}" '$1 == REPO { print $2 }
     exit 1
 fi    
 
+p "Checking for running instances"
+RUNNING=$( docker ps -q --filter "name=${RTS_PREFIX}_*" 2>&1 ) || e "Failed command to query instances: $RUNNING"
+if ! [[ -z "$RUNNING" ]]; then
+    e "We already have containers running with name '${RTS_PREFIX}_*'. Use --cleanup to kill the"
+else
+    ok "Nothing running"
+fi
 # We need some cap's because of start-stop-daemon
 ## see @ https://github.com/docker/docker/issues/6800
 
@@ -142,6 +149,7 @@ E=$(
             ${RTS_IMAGE}:dns
     2>&1 ) || e "Failed" "$E"            
 ok "system started"
+sleep 2
 
 for MASTERNUMBER in 1; do
     MASTERNAME=$( printf "%s_m%02i" "${RTS_PREFIX}" "$MASTERNUMBER" )
