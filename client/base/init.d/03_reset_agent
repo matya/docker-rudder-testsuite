@@ -19,8 +19,19 @@ echo "* Generating new UUID: $UUID"
 echo "$UUID" > /opt/rudder/etc/uuid.hive
 
 echo "* Forcing inventory creation and upload"
-/var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory -b doInventory | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
+/var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
 
-echo "* Done. Policy update will kick in with default schedule"
+while : ; do
+    echo "* Waiting for policy to be available on relay"
+    curl -s -L http://${POLICY_SERVER}:15001/nodes.list | grep -q "$UUID" && break
+    sleep 60
+done
 
+echo "* Forcing policy update"
+/var/rudder/cfengine-community/bin/cf-agent -KICalways -f failsafe.cf | grep -v promo
 
+echo "* Forcing agent run"
+/var/rudder/cfengine-community/bin/cf-agent -KICalways
+
+echo "* Done"
+exit 0
