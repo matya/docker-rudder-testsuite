@@ -2,8 +2,10 @@
 
 set -e
 
+echo "- Setting up Rudder"
+
 if ! grep -q '^unset' /opt/rudder/etc/uuid.hive; then
-    echo "** UUID already existing, assuming restart of container"
+    echo "- UUID already existing, assuming restart of container"
     exit 0
 fi
 
@@ -11,28 +13,28 @@ fi
 
 : Setting policy server to ${POLICY_SERVER:=rudder-master}
 
-echo "* Setting policy server: ${POLICY_SERVER}"
+echo "- Setting policy server: ${POLICY_SERVER}"
 echo "${POLICY_SERVER}" > /var/rudder/cfengine-community/policy_server.dat
 
 UUID=$( uuidgen )
-echo "* Generating new UUID: $UUID"
+echo "- Generating new UUID: $UUID"
 echo "$UUID" > /opt/rudder/etc/uuid.hive
 
-echo "* Forcing inventory creation and upload"
+echo "- Agent run with forced inventory creation and upload"
 /var/rudder/cfengine-community/bin/cf-agent -KI -D force_inventory | awk -F '@#' '/^R:/ { print "rudder>> " $NF; fflush(); }'
 
-echo "* Calling home to policy_server to accept us as relays..."
+echo "- Calling home to policy_server to accept us as relays..."
 curl -s -L http://${POLICY_SERVER}:15000/cgi-bin/relayize.cgi?${UUID}
 
-echo "* Waiting some time for promises being generated..."
-for i in {1..72}; do
+while : ; do
     curl -s -L http://${POLICY_SERVER}:15000/relays.txt | grep -q $UUID && break
+    echo "- Waiting some time for promises being generated..."
     sleep 5
 done
 
-echo "* Pulling fresh config"
+echo "- Pulling fresh config"
 /var/rudder/cfengine-community/bin/cf-agent -KI -f failsafe.cf | grep -v promo
 
-echo "* Done."
+echo "- Done."
 
 

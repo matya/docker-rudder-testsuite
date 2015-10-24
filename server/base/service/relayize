@@ -28,8 +28,8 @@ echo "[relayize: service]** Started daemon to listen to promotion requests of wa
 while : ; do
     read UUID < $PIPE
     echo "[relayize: service]** Processing request to promote to relay of $UUID"
-    ( /rudder/bin/relayize.sh "$UUID" 2>&1 | awk -v "P=$BASHPID" '{print "[relayize:" P "]** " $0; fflush(); }' ) &
-    echo "[relayize: service]** Started worked $!"
+    ( /rudder/bin/relayize.sh "$UUID" 2>&1 ) &
+    echo "[relayize: service]** Started worker $!"
 done 
 
 
