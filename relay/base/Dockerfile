@@ -23,8 +23,8 @@ RUN \
 		/usr/bin/htpasswd -bc ${i} rudder rudder; \
 	done && \
 	touch /opt/rudder/etc/rudder-networks.conf && \
-	cp /rudder/conf/vhost-rudder.conf /etc/apache2/sites-available/rudder-default.conf && \
-	a2ensite rudder-default
+	cp /rudder/conf/rudder-*.conf /etc/apache2/sites-available/ && \
+	a2ensite rudder-*
 
 
 ONBUILD RUN \
