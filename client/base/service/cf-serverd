@@ -1,3 +1,3 @@
 #!/bin/bash
 pkill cf-serverd
-exec /var/rudder/cfengine-community/bin/cf-serverd -F
+exec /var/rudder/cfengine-community/bin/cf-serverd -F ${DEBUG:+-v}

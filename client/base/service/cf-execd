@@ -1,5 +1,4 @@
 #!/bin/bash
 pkill cf-execd
-sleep 1
-exec /var/rudder/cfengine-community/bin/cf-execd --no-fork
+exec /var/rudder/cfengine-community/bin/cf-execd --no-fork ${DEBUG:+-v}
 

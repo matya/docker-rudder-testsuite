@@ -25,6 +25,7 @@
 
 ### Parse CLI variables
 R=1
+unset DEBUG
 RELAYS=()
 while [[ $# -gt 0 ]]; do 
     case "$1" in
@@ -47,6 +48,9 @@ while [[ $# -gt 0 ]]; do
             grep -q '^-' <<<"$2" && { echo "--release requires an argument"; exit 1; }
             RTS_RELEASE="$2";
             shift;
+            ;;
+        --debug|-D)
+            DEBUG=1
             ;;
         --cleanup)
             echo "The following containers are going to be deleted:"
@@ -161,6 +165,7 @@ for MASTERNUMBER in 1; do
             --name "$MASTERNAME" --hostname="$MASTERNAME" \
             --cap-add=SYS_PTRACE \
             --link "${RTS_PREFIX}_dns:dns" \
+            ${DEBUG:+--env DEBUG=1} \
             -p ${SSLPORT}:443 \
                 ${RTS_IMAGE}:server.${RTS_RELEASE}  
         2>&1 ) || e "Failed" "$E"
@@ -181,6 +186,7 @@ for MASTERNUMBER in 1; do
                 --env "POLICY_SERVER=$MASTERNAME" \
                 --link "${RTS_PREFIX}_dns:dns" \
                 --link "$MASTERNAME:$MASTERNAME" \
+                ${DEBUG:+--env DEBUG=1} \
                     ${RTS_IMAGE}:relay.${RTS_RELEASE} 
             2>&1 ) || e "Failed" "$E"
         ok "'$RELAYNAME' started with ${E:0:12}"
@@ -201,6 +207,7 @@ for MASTERNUMBER in 1; do
                         --env "POLICY_SERVER=$RELAYNAME" \
                         --link "${RTS_PREFIX}_dns:dns" \
                         --link "$RELAYNAME:$RELAYNAME" \
+                        ${DEBUG:+--env DEBUG=1} \
                             ${RTS_IMAGE}:client.${RTS_RELEASE} 
                     2>&1 ) || e "Failed" "$E"
                 ok "'$CLIENTNAME' started with ${E:0:12}"
