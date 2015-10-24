@@ -1,2 +1,6 @@
 #!/bin/bash
-exec /usr/sbin/service rsyslog start
+[[ -f /etc/rsyslog.d/50-default.conf ]] && rm /etc/rsyslog.d/50-default.conf
+echo '$ModLoad immark' > /etc/rsyslog.d/00-mark.conf
+echo '*.*  -/var/log/messages' > /etc/rsyslog.d/xx-all-messages.conf
+sed -i 's/.*\(imklog\|KLogPermitNonKernelFacility\).*/#DISABLED# &/g' /etc/rsyslog.conf
+exec /etc/init.d/rsyslog start
