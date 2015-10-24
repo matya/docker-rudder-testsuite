@@ -19,6 +19,11 @@ ONBUILD RUN \
  	apt-get -y update && \
 	apt-get -y --no-install-recommends install \
 		rudder-inventory-ldap && \
+	if [ -f /etc/default/rudder-slapd ]; then \
+		sed -i 's/^RUDDER_CACHESIZE=.*/RUDDER_CACHESIZE="noauto"/g' /etc/default/rudder-slapd; \
+	else \
+		echo 'RUDDER_CACHESIZE="noauto"' > /etc/default/rudder-slapd; \
+	fi && \
 	/etc/init.d/rudder-slapd start && \
 	/etc/init.d/postgresql start && \
 	apt-get -y --no-install-recommends install \
