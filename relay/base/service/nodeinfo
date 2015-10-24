@@ -1,0 +1,22 @@
+#!/bin/bash
+
+USER=www-data
+GROUP=www-data
+
+cd /;
+exec < /dev/null >&2;
+
+mkdir -m 755 -p /var/nodeinfo
+touch /var/nodeinfo/nodes.list
+chown ${USER}:${GROUP} /var/nodeinfo/nodes.list
+chmod 644 /var/nodeinfo/nodes.list
+
+echo "[nodeinfo: service]** Started daemon to generate list of known nodes with policy ;-)"
+
+while sleep 20; do
+    find /var/rudder/share/ \
+        -maxdepth 4 \
+        -type f \
+        -name rudder_promises_generated | awk -F'/' '{print $(NF-3)}' > /var/nodeinfo/nodes.list
+    echo "* Updating nodes.list: we have $(wc -l /var/nodeinfo/nodes.list) node(s)."
+done
