@@ -1,3 +1,4 @@
-Dockerfile.intern
-proxy.conf
+apt.conf.d
+sources.list.d
+key_0x474A19E8.gpg.pub
 
