@@ -1,0 +1,3 @@
+#!/bin/bash
+exec /usr/sbin/cron -L 1 -f
+
